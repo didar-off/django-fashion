@@ -1,48 +1,41 @@
-🛍 Fashion Shop - Multi-Vendor Clothing Store
+# 🛍 Fashion Shop - Multi-Vendor Clothing Store
 
 Welcome to Fashion Shop, a fully functional multi-vendor eCommerce platform built with Django. This project is designed to provide a seamless shopping experience with advanced features, including product variants, vendor subscriptions, AI-powered recommendations, and more!
 
-🚀 Features
+## 🚀 Features
 
-🏬 Multi-Vendor Support - Sellers can register and manage their products
+- 🏬 **Multi-Vendor Support** - Sellers can register and manage their products
 
-🎨 Product Variants & Bundles - Different sizes, colors, and combinations
+- 🎨 **Product Variants & Bundles** - Different sizes, colors, and combinations
 
-❤️ Wishlist & Favorites - Save favorite items for later
+- ❤️ **Wishlist & Favorites** - Save favorite items for later
 
-💰 Dynamic Pricing & Discounts - Automated price adjustments and offers
+- 💰 **Dynamic Pricing & Discounts** - Automated price adjustments and offers
 
-📢 Vendor Subscription Plans - Different tiers for sellers
+- 📢 **Vendor Subscription Plans** - Different tiers for sellers
 
-🌍 Multi-Language & Multi-Currency Support
+- 🌍 **Multi-Language & Multi-Currency Support**
 
-⭐ Product Reviews & Ratings - Customer feedback system
+- ⭐ **Product Reviews & Ratings** - Customer feedback system
 
-📝 Blog Integration - News and updates section
+- 📝 **Blog Integration** - News and updates section
 
-🔐 Social Media Login & 2FA Authentication - Secure access
+- 🔐 **Social Media Login & 2FA Authentication** - Secure access
 
-🔍 Advanced Search with Filters - Fast and accurate search
+- 🔍 **Advanced Search with Filters** - Fast and accurate search
 
-🤖 AI-Powered Recommendations - Personalized shopping experience
+- 🤖 **AI-Powered Recommendations** - Personalized shopping experience
 
-🏗 Tech Stack
+## 🏗 Tech Stack
 
-Backend: Django, Django REST Framework (DRF)
+[![My Skills](https://skillicons.dev/icons?i=js,html,css,git,github,py,django,postgres,react,gmail)](https://skillicons.dev)
 
-Database: PostgreSQL
 
-Frontend: (Template-based, can integrate with React/Vue)
-
-Authentication: Django Allauth, Google/Facebook login
-
-Payments: Stripe, PayPal integration
-
-📦 Installation
+## 📦 Installation
 
 Clone the repository:
 
-git clone https://github.com/your-username/fashion_shop.git
+git clone https://github.com/didar-off/django-fashion.git
 cd fashion_shop
 
 Create a virtual environment:
@@ -66,17 +59,25 @@ Run the development server:
 
 python manage.py runserver
 
-🌎 Deployment
+## 🌎 Deployment
 
 Coming soon...
 
-📜 License
+## 📜 License
 
 This project is open-source and available under the MIT License.
 
-🤝 Contributing
+## 🤝 Contributing
 
 Contributions are welcome! Feel free to open issues and submit pull requests.
 
-🚀 Happy Coding! 🛒
+Email: didarkuliew54@gmail.com <br>
+GitHub: didar-off
 
+
+## ⚠️ Demo Version
+This project is currently under development and is improving every day.
+
+<br>
+
+_✨ “Code is like humor. When you have to explain it, it’s bad.” – Cory House_
