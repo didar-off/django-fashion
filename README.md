@@ -63,6 +63,7 @@ Follow these steps to set up the project locally:
 4.  **Set up the database:**
     * Create a PostgreSQL database.
     * Update the database settings in `config/settings.py` (or use `.env` as we discussed).
+    
 5.  **Run migrations:**
     ```bash
     python manage.py migrate
