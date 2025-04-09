@@ -18,10 +18,10 @@ class UserManager(BaseUserManager):
         extra_fields.setdefault('is_staff', True)
         extra_fields.setdefault('is_superuser', True)
 
-        if extra_fields.get('is_staff') is not True:
-            raise ValueError('Superuser must have is_staff=True.')
-        if extra_fields.get('is_superuser') is not True:
-            raise ValueError('Superuser must have is_superuser=True.')
+        if not extra_fields.get('is_staff'):
+            raise ValueError(_('Superuser must have is_staff=True.'))
+        if not extra_fields.get('is_superuser'):
+            raise ValueError(_('Superuser must have is_superuser=True.'))
 
         return self.create_user(email, password, **extra_fields)
 
@@ -40,9 +40,9 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     is_active = models.BooleanField(_('active'), default=True)
     is_staff = models.BooleanField(_('staff status'), default=False)
-    vendor_profile = models.OneToOneField('vendors.Vendor', on_delete=models.SET_NULL, null=True, blank=True, related_name='user_profile')
-    is_verified_vendor = models.BooleanField(_('verified vendor'), default=False)
+
     date_joined = models.DateTimeField(_('date joined'), auto_now_add=True)
+    updated_at = models.DateTimeField(_('updated at'), auto_now=True)
 
     objects = UserManager()
 
@@ -52,21 +52,38 @@ class User(AbstractBaseUser, PermissionsMixin):
     def __str__(self):
         return self.email
 
+    # def save(self, *args, **kwargs):
+    #     creating = self.pk is None
+
+    #     if self.image:
+    #         self.image.name = self.generate_image_filename(self.image.name)
+
+    #     super().save(*args, **kwargs)
+
+    #     if self.user_type == 'vendor' and creating:
+    #         from vendors.models import Vendor
+    #         if not hasattr(self, 'vendor'):
+    #             base_store_name = self.full_name[:(Vendor._meta.get_field('store_name').max_length - 4)] # Reserve space for "'s Store"
+    #             store_name = f"{base_store_name}'s Store"
+    #             Vendor.objects.create(
+    #                 user=self,
+    #                 store_name=store_name
+    #             )
+
     def save(self, *args, **kwargs):
         creating = self.pk is None
+
         if self.image:
             self.image.name = self.generate_image_filename(self.image.name)
+
         super().save(*args, **kwargs)
 
-        # Automatically create Vendor if user_type is 'vendor'
         if self.user_type == 'vendor' and creating:
-            from vendors.models import Vendor  # Avoid circular import
+            from vendors.models import Vendor
             if not hasattr(self, 'vendor'):
                 store_name = f"{self.full_name}'s Store"
-                Vendor.objects.create(
-                    user=self,
-                    store_name=store_name[:100]  # truncate to avoid DB error
-                )
+                max_length = Vendor._meta.get_field('store_name').max_length
+                Vendor.objects.create(user=self, store_name=store_name[:max_length])
 
 
     def generate_image_filename(self, filename):
@@ -74,6 +91,10 @@ class User(AbstractBaseUser, PermissionsMixin):
         hashed_email = hashlib.sha256(self.email.encode('utf-8')).hexdigest()
         filename = f'{hashed_email}.{ext}'
         return f'user_{hashed_email}/{filename}'
+
+    @property
+    def is_vendor_verified(self):
+        return hasattr(self, 'vendor') and self.vendor.is_verified
 
     class Meta:
         verbose_name = _('user')
