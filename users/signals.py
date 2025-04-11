@@ -8,11 +8,12 @@ from vendors.models import Vendor
 @receiver(post_save, sender=User)
 def handle_vendor_status(sender, instance, created, **kwargs):
     def create_or_delete_vendor():
-        if instance.is_vendor:
+        if instance.user_type == 'vendor':
             Vendor.objects.get_or_create(
                 user=instance,
                 defaults={'store_name': f"{instance.full_name}'s Store"}
             )
         else:
             Vendor.objects.filter(user=instance).delete()
+
     transaction.on_commit(create_or_delete_vendor)

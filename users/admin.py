@@ -7,8 +7,8 @@ from django.utils.translation import gettext_lazy as _
 
 @admin.register(users_models.User)
 class CustomUserAdmin(UserAdmin):
-    list_display = ('email', 'full_name', 'is_active', 'is_staff', 'is_vendor', 'date_joined_display')
-    list_filter = ('is_active', 'is_staff', 'is_superuser', 'is_vendor', 'date_joined')
+    list_display = ('email', 'full_name', 'is_active', 'is_staff', 'user_type', 'date_joined_display')
+    list_filter = ('is_active', 'is_staff', 'is_superuser', 'user_type', 'date_joined')
     search_fields = ('email', 'full_name')
     ordering = ('-date_joined',)
     readonly_fields = ('date_joined', 'updated_at', 'image_preview')
@@ -16,7 +16,7 @@ class CustomUserAdmin(UserAdmin):
     
     fieldsets = (
         (None, {'fields': ('email', 'password')}),
-        (_('Personal info'), {'fields': ('full_name', 'image', 'image_preview', 'is_vendor')}),
+        (_('Personal info'), {'fields': ('full_name', 'image', 'image_preview', 'user_type')}),
         (_('Permissions'), {
             'fields': ('is_active', 'is_staff', 'is_superuser', 'groups', 'user_permissions'),
         }),
@@ -26,7 +26,7 @@ class CustomUserAdmin(UserAdmin):
     add_fieldsets = (
         (None, {
             'classes': ('wide',),
-            'fields': ('email', 'full_name', 'is_vendor', 'password1', 'password2'),
+            'fields': ('email', 'full_name', 'user_type', 'password1', 'password2'),
         }),
     )
 
@@ -43,7 +43,7 @@ class CustomUserAdmin(UserAdmin):
 
     def save_model(self, request, obj, form, change):
         super().save_model(request, obj, form, change)
-        if obj.is_vendor and not hasattr(obj, 'vendor'):
+        if obj.user_type and not hasattr(obj, 'vendor'):
             from vendors.models import Vendor
             Vendor.objects.get_or_create(
                 user=obj,

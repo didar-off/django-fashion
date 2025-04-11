@@ -20,7 +20,7 @@ class UserManager(BaseUserManager):
     def create_superuser(self, email, password=None, **extra_fields):
         extra_fields.setdefault('is_staff', True)
         extra_fields.setdefault('is_superuser', True)
-        extra_fields.setdefault('is_vendor', False)
+        extra_fields.setdefault('user_type', 'customer')
 
         if extra_fields.get('is_staff') is not True:
             raise ValueError(_('Superuser must have is_staff=True.'))
@@ -31,6 +31,12 @@ class UserManager(BaseUserManager):
 
 
 class User(AbstractBaseUser, PermissionsMixin):
+
+    USER_TYPE_CHOICES = (
+        ('customer', _('Customer')),
+        ('vendor', _('Vendor')),
+    )
+
     email = models.EmailField(_('email address'), unique=True)
     full_name = models.CharField(_('full name'), max_length=150)
     image = models.ImageField(
@@ -40,7 +46,15 @@ class User(AbstractBaseUser, PermissionsMixin):
         null=True,
         validators=[FileExtensionValidator(['jpg', 'jpeg', 'png'])]
     )
-    is_vendor = models.BooleanField(_('vendor status'), default=False)
+
+    user_type = models.CharField(
+        _('user type'),
+        max_length=10,
+        choices=USER_TYPE_CHOICES,
+        default='customer',
+        help_text=_('Defines whether the user is a customer or a vendor.')
+    )
+
     is_active = models.BooleanField(_('active'), default=True)
     is_staff = models.BooleanField(_('staff status'), default=False)
     date_joined = models.DateTimeField(_('date joined'), auto_now_add=True)
@@ -51,7 +65,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['full_name']
 
-    class Meta:
+    class Meta(TimeStampedModel.Meta):
         verbose_name = _('user')
         verbose_name_plural = _('users')
         ordering = ['-date_joined']
@@ -73,3 +87,7 @@ class User(AbstractBaseUser, PermissionsMixin):
         ext = filename.split('.')[-1]
         new_filename = f"{uuid.uuid4()}.{ext}"
         return f"user_{self.pk}/{new_filename}"
+    
+    @property
+    def is_vendor(self):
+        return self.user_type == 'vendor'
