@@ -1,6 +1,8 @@
 import uuid
-import hashlib
+import random
 from django.db import models
+from django.utils import timezone
+from django.conf import settings
 from django.utils.translation import gettext_lazy as _
 from django.core.validators import FileExtensionValidator
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, BaseUserManager
@@ -91,3 +93,17 @@ class User(AbstractBaseUser, PermissionsMixin):
     @property
     def is_vendor(self):
         return self.user_type == 'vendor'
+ 
+
+class EmailVerificationCode(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    code = models.CharField(max_length=6)
+    created_at = models.DateTimeField(auto_now_add=True)
+    is_used = models.BooleanField(default=False)
+
+    def is_expired(self):
+        return timezone.now() > self.created_at + timezone.timedelta(minutes=15)
+
+    @staticmethod
+    def generate_code():
+        return "{:06d}".format(random.randint(0, 999999))

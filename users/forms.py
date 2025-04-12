@@ -51,3 +51,11 @@ class RegistrationForm(UserCreationForm):
         if commit:
             user.save()
         return user
+
+
+class VerificationCodeForm(forms.Form):
+    code = forms.CharField(
+        max_length=6,
+        label="Enter the 6-digit code",
+        widget=forms.TextInput(attrs={"placeholder": "123456"})
+    )

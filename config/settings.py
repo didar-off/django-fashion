@@ -13,6 +13,7 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 import os
 from pathlib import Path
 from dotenv import load_dotenv
+from django.core.exceptions import ImproperlyConfigured
 
 load_dotenv()
 
@@ -347,3 +348,24 @@ customColorPalette = [
     {"color": "hsl(231, 48%, 48%)", "label": "Indigo"},
     {"color": "hsl(207, 90%, 54%)", "label": "Blue"},
 ]
+
+
+# Default Email Setup
+
+DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL')
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')
+
+
+print("EMAIL_USER:", repr(EMAIL_HOST_USER))
+print("EMAIL_PASS:", repr(EMAIL_HOST_PASSWORD))
+print("FROM:", repr(DEFAULT_FROM_EMAIL))
+
+
+if not DEBUG:
+    if not all([EMAIL_HOST_USER, EMAIL_HOST_PASSWORD]):
+        raise ImproperlyConfigured("Email settings are required in production")

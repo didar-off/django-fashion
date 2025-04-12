@@ -1,0 +1,88 @@
+{% extends "partials/base.html" %}
+{% block content %}
+{% load static %}
+
+<!-- Breadcrumb Section Start -->
+<section class="breadcrumb-section pt-0">
+    <div class="container-fluid-lg">
+        <div class="row">
+            <div class="col-12">
+                <div class="breadcrumb-contain">
+                    <h2>OTP</h2>
+                    <nav>
+                        <ol class="breadcrumb mb-0">
+                            <li class="breadcrumb-item">
+                                <a href="index.html">
+                                    <i class="fa-solid fa-house"></i>
+                                </a>
+                            </li>
+                            <li class="breadcrumb-item active">OTP</li>
+                        </ol>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- Breadcrumb Section End -->
+
+<!-- log in section start -->
+<section class="log-in-section otp-section section-b-space">
+    <div class="container-fluid-lg">
+        <div class="row">
+            <div class="col-xxl-6 col-xl-5 col-lg-6 d-lg-block d-none ms-auto">
+                <div class="image-contain">
+                    <img src="{% static 'assets/images/inner-page/otp.png' %}" class="img-fluid" alt="OTP Image">
+                </div>
+            </div>
+
+            <div class="col-xxl-4 col-xl-5 col-lg-6 col-sm-8 mx-auto">
+                <div class="d-flex align-items-center justify-content-center h-100">
+                    <div class="log-in-box">
+                        <div class="log-in-title text-center">
+                            <h3 class="text-title">Enter the verification code</h3>
+                            <h5 class="text-content">We've sent a code to your email</h5>
+                        </div>
+
+                        {% if messages %}
+                            {% for message in messages %}
+                                <div class="alert alert-{{message.tags}} mt-3">
+                                    {{message}}
+                                </div>
+                            {% endfor %}
+                        {% endif %}
+
+                        <form method="post" class="pt-3">
+                            {% csrf_token %}
+
+                            <div class="mb-3">
+                                {{form.code.label_tag}}
+                                {{form.code}}
+                                {% for error in form.code.errors %}
+                                    <small class="text-danger">{{error}}</small>
+                                {% endfor %}
+                            </div>
+
+                            <button type="submit" class="btn btn-animation w-100 mt-3">
+                                Validate
+                            </button>
+                        </form>
+
+                        <div class="send-box pt-4 text-center">
+                            <h5>
+                                Didn't get the code?
+                                <a href="" class="theme-color fw-bold">
+                                    Resend It
+                                </a>
+                            </h5>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- log in section end -->
+
+{% endblock content %}
