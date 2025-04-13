@@ -13,6 +13,7 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 import os
 from pathlib import Path
 from dotenv import load_dotenv
+from django.contrib import messages
 from django.core.exceptions import ImproperlyConfigured
 
 load_dotenv()
@@ -160,6 +161,11 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
 AUTH_USER_MODEL = 'users.User'
+
+
+MESSAGE_TAGS = {
+    messages.ERROR: 'danger',
+}
 
 
 # Jazzmin Settings

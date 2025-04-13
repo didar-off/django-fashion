@@ -6,56 +6,70 @@ from users.models import User
 
 class RegistrationForm(UserCreationForm):
     full_name = forms.CharField(
-        max_length=100,
+        max_length=150,
         label='Full Name',
-        widget=forms.TextInput(attrs={'placeholder': 'Enter your full name', 'class': 'form-control'})
+        widget=forms.TextInput(attrs={
+            'placeholder': 'Enter your full name',
+            'class': 'form-control'
+        })
     )
     email = forms.EmailField(
         label='Email',
-        widget=forms.EmailInput(attrs={'placeholder': 'Enter your email', 'class': 'form-control'})
+        widget=forms.EmailInput(attrs={
+            'placeholder': 'Enter your email',
+            'class': 'form-control'
+        })
     )
     user_type = forms.ChoiceField(
         choices=User.USER_TYPE_CHOICES,
         label='User Type',
-        widget=forms.RadioSelect(attrs={'class': 'form-check-input'}),
-        initial='customer'
+        widget=forms.RadioSelect
     )
     image = forms.ImageField(
         required=False,
-        widget=forms.FileInput(attrs={'class': 'form-control-file'})
+        widget=forms.ClearableFileInput(attrs={'class': 'form-control'})
     )
 
-    class Meta(UserCreationForm.Meta):
+    class Meta:
         model = User
         fields = ('email', 'full_name', 'user_type', 'image', 'password1', 'password2')
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        for field in self.fields.values():
-            field.widget.attrs.setdefault('class', 'form-control')
-
-    def clean_email(self):
-        email = self.cleaned_data['email']
-        if User.objects.filter(email=email).exists():
-            raise forms.ValidationError("A user with this email already exists.")
-        return email
 
     def save(self, commit=True):
         user = super().save(commit=False)
         user.email = self.cleaned_data['email']
         user.full_name = self.cleaned_data['full_name']
         user.user_type = self.cleaned_data['user_type']
-        image = self.cleaned_data.get('image')
-        if image:
-            user.image = image
+        user.image = self.cleaned_data.get('image')
         if commit:
             user.save()
         return user
+
+
+class LoginForm(AuthenticationForm):
+    username = forms.EmailField(
+        label='Email',
+        widget=forms.EmailInput(attrs={
+            'placeholder': 'Enter your email',
+            'class': 'form-control'
+        })
+    )
+    password = forms.CharField(
+        label='Password',
+        widget=forms.PasswordInput(attrs={
+            'placeholder': 'Enter your password',
+            'class': 'form-control'
+        })
+    )
 
 
 class VerificationCodeForm(forms.Form):
     code = forms.CharField(
         max_length=6,
         label="Enter the 6-digit code",
-        widget=forms.TextInput(attrs={"placeholder": "123456"})
+        widget=forms.TextInput(attrs={
+            'placeholder': 'Enter 6-digit code',
+            'class': 'form-control text-center',
+            'autocomplete': 'off'
+        })
     )
+

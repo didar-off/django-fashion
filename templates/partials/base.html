@@ -159,7 +159,7 @@
                                     <i class="fa-solid fa-bars"></i>
                                 </span>
                             </button>
-                            <a href="index.html" class="web-logo nav-logo">
+                            <a href="{% url "core:index" %}" class="web-logo nav-logo">
                                 <img src="{% static 'assets/images/logo/6.png' %}" class="img-fluid blur-up lazyload" alt="">
                             </a>
 
@@ -179,7 +179,7 @@
 
                                                     <ul class="dropdown-menu">
                                                         <li>
-                                                            <a class="dropdown-item" href="index.html">Kartshop</a>
+                                                            <a class="dropdown-item" href="{% url "core:index" %}">Kartshop</a>
                                                         </li>
                                                         <li>
                                                             <a class="dropdown-item" href="index-2.html">Sweetshop</a>
@@ -736,25 +736,32 @@
                                                 <i data-feather="user"></i>
                                             </div>
                                             <div class="delivery-detail">
-                                                <h6>Hello,</h6>
+                                                <h6>Hello, {{user.full_name}}</h6>
                                                 <h5>My Account</h5>
                                             </div>
                                         </div>
 
                                         <div class="onhover-div onhover-div-login">
                                             <ul class="user-box-name">
+                                                {% if user.is_authenticated %}
                                                 <li class="product-box-contain">
                                                     <i></i>
-                                                    <a href="login.html">Log In</a>
-                                                </li>
-
-                                                <li class="product-box-contain">
-                                                    <a href="sign-up.html">Register</a>
+                                                    <a href="{% url "users:logout" %}">Log Out</a>
                                                 </li>
 
                                                 <li class="product-box-contain">
                                                     <a href="forgot.html">Forgot Password</a>
                                                 </li>
+                                                {% else %}
+                                                <li class="product-box-contain">
+                                                    <i></i>
+                                                    <a href="{% url "users:login" %}">Log In</a>
+                                                </li>
+
+                                                <li class="product-box-contain">
+                                                    <a href="{% url "users:sign-up" %}">Register</a>
+                                                </li>
+                                                {% endif %}
                                             </ul>
                                         </div>
                                     </li>
@@ -772,7 +779,7 @@
     <div class="mobile-menu d-md-none d-block mobile-cart">
         <ul>
             <li class="active">
-                <a href="index.html">
+                <a href="{% url "core:index" %}">
                     <i class="iconly-Home icli"></i>
                     <span>Home</span>
                 </a>
@@ -809,6 +816,19 @@
     </div>
     <!-- mobile fix menu end -->
 
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{message.tags}}">
+                <strong>{{message}}</strong>
+            </div>
+        {% endfor %}
+    {% endif %}
+    <script>
+        setTimeout (() => {
+            $(".alert").alert("close")
+        }, 5000)
+    </script>
+
     {% block content %}
     {% endblock content %}
 
@@ -818,7 +838,7 @@
             <div class="main-footer">
                 <div class="row g-md-4 gy-sm-5">
                     <div class="col-xxl-3 col-xl-4 col-sm-6">
-                        <a href="index.html" class="foot-logo theme-logo">
+                        <a href="{% url "core:index" %}" class="foot-logo theme-logo">
                             <img src="{% static 'assets/images/logo/4.png' %}" class="img-fluid blur-up lazyload" alt="">
                         </a>
                         <p class="information-text information-text-2">it is a long established fact that a reader

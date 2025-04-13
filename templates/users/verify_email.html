@@ -40,14 +40,14 @@
                 <div class="d-flex align-items-center justify-content-center h-100">
                     <div class="log-in-box">
                         <div class="log-in-title text-center">
-                            <h3 class="text-title">Enter the verification code</h3>
+                            <h3 class="text-title">Enter the 6-digit verification code</h3>
                             <h5 class="text-content">We've sent a code to your email</h5>
                         </div>
 
                         {% if messages %}
                             {% for message in messages %}
-                                <div class="alert alert-{{message.tags}} mt-3">
-                                    {{message}}
+                                <div class="alert alert-{{ message.tags }} mt-3">
+                                    {{ message }}
                                 </div>
                             {% endfor %}
                         {% endif %}
@@ -55,12 +55,18 @@
                         <form method="post" class="pt-3">
                             {% csrf_token %}
 
-                            <div class="mb-3">
-                                {{form.code.label_tag}}
-                                {{form.code}}
-                                {% for error in form.code.errors %}
-                                    <small class="text-danger">{{error}}</small>
-                                {% endfor %}
+                            <div id="otp" class="inputs d-flex flex-row justify-content-center">
+                                <input class="form-control text-center mx-1 otp-input" type="number" maxlength="1" id="otp1">
+                                <input class="form-control text-center mx-1 otp-input" type="number" maxlength="1" id="otp2">
+                                <input class="form-control text-center mx-1 otp-input" type="number" maxlength="1" id="otp3">
+                                <input class="form-control text-center mx-1 otp-input" type="number" maxlength="1" id="otp4">
+                                <input class="form-control text-center mx-1 otp-input" type="number" maxlength="1" id="otp5">
+                                <input class="form-control text-center mx-1 otp-input" type="number" maxlength="1" id="otp6">
+                                <input type="hidden" name="code" id="finalCode">
+                            </div>
+
+                            <div class="text-danger text-center mt-2">
+                                {% for error in form.code.errors %}{{ error }}{% endfor %}
                             </div>
 
                             <button type="submit" class="btn btn-animation w-100 mt-3">
@@ -69,11 +75,12 @@
                         </form>
 
                         <div class="send-box pt-4 text-center">
-                            <h5>
+                            <h5 id="resend-block">
                                 Didn't get the code?
-                                <a href="" class="theme-color fw-bold">
+                                <a href="{% url 'users:resend-code' %}" class="theme-color fw-bold" id="resend-btn">
                                     Resend It
                                 </a>
+                                <span id="resend-timer" style="display:none;">(Wait <span id="countdown">30</span>s)</span>
                             </h5>
                         </div>
 
@@ -83,6 +90,66 @@
         </div>
     </div>
 </section>
+
+<script>
+    const inputs = document.querySelectorAll('#otp input[type="number"]');
+    inputs.forEach((input, index) => {
+        input.addEventListener('input', () => {
+            if (input.value.length === 1 && index < inputs.length - 1) {
+                inputs[index + 1].focus();
+            }
+            updateFinalCode();
+        });
+        input.addEventListener('keydown', (e) => {
+            if (e.key === 'Backspace' && input.value === '' && index > 0) {
+                inputs[index - 1].focus();
+            }
+        });
+    });
+
+    function updateFinalCode() {
+        const code = Array.from(inputs).map(i => i.value).join('');
+        document.getElementById('finalCode').value = code;
+    }
+
+    const resendBtn = document.getElementById('resend-btn');
+    const resendTimer = document.getElementById('resend-timer');
+    const countdown = document.getElementById('countdown');
+
+    resendBtn.addEventListener('click', function (e) {
+        e.preventDefault();
+        resendBtn.style.pointerEvents = 'none';
+        resendBtn.style.color = '#ccc';
+        resendTimer.style.display = 'inline';
+
+        let timeLeft = 30;
+        const timerInterval = setInterval(() => {
+            timeLeft--;
+            countdown.textContent = timeLeft;
+
+            if (timeLeft <= 0) {
+                clearInterval(timerInterval);
+                resendBtn.style.pointerEvents = 'auto';
+                resendBtn.style.color = '';
+                window.location.href = resendBtn.getAttribute('href');
+            }
+        }, 1000);
+    });
+</script>
+
+<style>
+    .otp-input {
+        transition: transform 0.2s ease-in-out;
+        font-size: 1.5rem;
+        width: 48px;
+        height: 56px;
+    }
+    .otp-input:focus {
+        transform: scale(1.1);
+        border-color: #6366f1;
+        box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.3);
+    }
+</style>
 <!-- log in section end -->
 
 {% endblock content %}
