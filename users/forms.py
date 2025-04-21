@@ -43,6 +43,12 @@ class RegistrationForm(UserCreationForm):
         if commit:
             user.save()
         return user
+    
+    def clean_user_type(self):
+        user_type = self.cleaned_data.get('user_type')
+        if user_type not in dict(User.USER_TYPE_CHOICES).keys():
+            raise forms.ValidationError("Invalid user type")
+        return user_type
 
 
 class LoginForm(AuthenticationForm):

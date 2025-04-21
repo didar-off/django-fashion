@@ -1,7 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
-from django.contrib.auth import login, logout, authenticate
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth import login, logout
 from django.utils.translation import gettext_lazy as _
 from django.views.decorators.http import require_http_methods
 from django.utils import timezone
@@ -9,8 +8,7 @@ from users.forms import RegistrationForm, VerificationCodeForm, LoginForm
 from users.models import EmailVerificationCode, User
 from users.utils import send_email_verification_code
 import logging
-from django.http import HttpResponseRedirect
-from django.urls import reverse
+from django.db import transaction
 from datetime import timedelta
 
 logger = logging.getLogger(__name__)
@@ -53,25 +51,28 @@ def verify_email_view(request):
         if form.is_valid():
             code_input = form.cleaned_data["code"]
             try:
-                code_obj = EmailVerificationCode.objects.filter(
-                    user=user,
-                    is_used=False
-                ).latest("created_at")
+                with transaction.atomic():
+                    code_obj = EmailVerificationCode.objects.select_for_update().filter(
+                        user=user,
+                        is_used=False
+                    ).latest("created_at")
 
-                if code_obj.is_expired():
-                    messages.error(request, _("Code expired. Please register again."))
-                    return redirect("users:sign-up")
+                    if code_obj.is_expired():
+                        messages.error(request, _("Code expired. Please register again."))
+                        return redirect("users:sign-up")
 
-                if code_obj.code == code_input:
-                    user.is_active = True
-                    user.save()
-                    code_obj.is_used = True
-                    code_obj.save()
-                    login(request, user)
-                    messages.success(request, _("Account verified!"))
-                    return redirect("core:index")
-                else:
-                    messages.error(request, _("Invalid code"))
+                    if code_obj.code == code_input:
+                        user.is_active = True
+                        user.save()
+                        code_obj.is_used = True
+                        code_obj.save()
+                        login(request, user)
+                        messages.success(request, _("Account verified!"))
+                        return redirect("core:index")
+                    else:
+                        code_obj.attempts += 1
+                        code_obj.save()
+                        messages.error(request, _("Invalid code"))
             except EmailVerificationCode.DoesNotExist:
                 messages.error(request, _("No code found"))
     else:

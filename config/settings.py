@@ -367,9 +367,9 @@ EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')
 
 
-print("EMAIL_USER:", repr(EMAIL_HOST_USER))
-print("EMAIL_PASS:", repr(EMAIL_HOST_PASSWORD))
-print("FROM:", repr(DEFAULT_FROM_EMAIL))
+LOGIN_URL = 'users:login'
+LOGIN_REDIRECT_URL = 'core:index'
+LOGOUT_REDIRECT_URL = 'users:login'
 
 
 if not DEBUG:

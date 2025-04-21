@@ -1,8 +1,8 @@
 import uuid
-import random
+import secrets
 from django.db import models
 from django.utils import timezone
-from django.conf import settings
+from model_utils import FieldTracker
 from django.utils.translation import gettext_lazy as _
 from django.core.validators import FileExtensionValidator
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, BaseUserManager
@@ -63,6 +63,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     updated_at = models.DateTimeField(_('updated at'), auto_now=True)
 
     objects = UserManager()
+    tracker = FieldTracker()
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['full_name']
@@ -100,10 +101,11 @@ class EmailVerificationCode(models.Model):
     code = models.CharField(max_length=6)
     created_at = models.DateTimeField(auto_now_add=True)
     is_used = models.BooleanField(default=False)
+    attemps = models.PositiveSmallIntegerField(default=0)
 
     def is_expired(self):
         return timezone.now() > self.created_at + timezone.timedelta(minutes=15)
 
     @staticmethod
     def generate_code():
-        return "{:06d}".format(random.randint(0, 999999))
+        return "{:06d}".format(secrets.randbelow(1000000))
